@@ -31,12 +31,22 @@ const Dog = () => {
 
     const [
         normalMap,
-        sampleMatcap    
+        sampleMatcap,  
     ] = useTexture([
         "/dog_normals.jpg",
-        "/matcap/mat-2.png"
+        "/matcap/mat-2.png",
+        "/branches_diffuse.jpeg",
+        "/branches_normals.jpeg"
+
     ]).map((texture) => {
         texture.flipY = false
+        texture.colorSpace = THREE.SRGBColorSpace
+        return texture
+    })
+
+    const [branchMap, branchnormalMap] = (useTexture([ "/branches_diffuse.jpeg",
+        "/branches_normals.jpeg"]))
+        .map((texture) => {
         texture.colorSpace = THREE.SRGBColorSpace
         return texture
     })
@@ -49,11 +59,19 @@ const Dog = () => {
                 matcap: sampleMatcap
             })
 
+
+    const branchMaterial = new THREE.MeshMatcapMaterial({
+        normalMap: branchnormalMap,
+        map: branchMap
+    })        
+
   
     model.scene.traverse((child) => {
         if(child.name.includes("DOG")) {
             child.material = dogMaterial
                 
+        } else {
+            child.material = branchMaterial
         }
         
     })
@@ -62,7 +80,7 @@ const Dog = () => {
       <>
          <primitive object={model.scene} position={[0.25, -0.6, 0]} rotation={[0, Math.PI/3.9, 0]} />
          <directionalLight position={[0,5,5]} color={0xffffff} intensity={10} />
-        <OrbitControls/>
+        {/* <OrbitControls/> */}
       </>
   )
 }
